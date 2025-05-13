@@ -3,6 +3,7 @@ from discord.ext import commands
 import os
 from dotenv import load_dotenv
 import StanCaculadora
+import JogosStan
 
 load_dotenv()
 
@@ -26,58 +27,21 @@ async def ola(ctx:commands.Context):
 @botStan.command()
 async def falar(ctx:commands.Context, *,frase):
     usuario = ctx.author
-    await ctx.reply(frase)    
+    await ctx.reply(frase)
+
+@botStan.event
+async def on_guild_channel_create(canal:discord.abc.GuildChannel):
+    await canal.send(f"Novo canal criado: {canal.name}")
+
+@botStan.event
+async def on_member_join(membro:discord.Member):
+    canal = botStan.get_channel(1371965370054738022)
+    await canal.send(f"{membro.display_name} Entrou no servidor!!\nSeja bem vindo!!")    
+
 
 botStan.add_command(StanCaculadora.calcular)
 
-@botStan.command()
-async def jogos(ctx:commands.Context):
-    embed = discord.Embed(title="Vamos no divertir", description= "Escolha uma opção:", color=discord.Color.blue())
-    embed.add_field(name= "Opção 1:", value= "Pedra, papel e tesoura", inline=False)
-    embed.add_field(name= "Opção 2:", value= "Pedra, papel e tesoura", inline=False)
-    embed.add_field(name= "Opção 3:", value= "Pedra, papel e tesoura", inline=False)
-    msg = await ctx.send(embed=embed)
-
-    await msg.add_reaction("1")
-    await msg.add_reaction("2")
-    await msg.add_reaction("3")
-
-    def check (reaction, user):
-        return user == ctx.author and str(reaction.str) in ["1", "2", "3"]
-    
-    try:
-        reaction, user = await botStan.wait_for("reaction_add", timeout=60.0, check=check)
-
-        if str(reaction.str) == "1":
-            await ctx.send('Você escolheu a Opção 1!')
-        elif str(reaction.str) == "2":
-            await ctx.send('Você escolheu a Opção 2!')
-        elif str(reaction.str) == "3":
-            await ctx.send('Você escolheu a Opção 3!')
-    except StopAsyncIteration.TimeoutError:
-        await ctx.send('Tempo esgotado!')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#botStan.add_command(JogosStan.jogos)
 
 
 
