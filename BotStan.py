@@ -41,7 +41,7 @@ async def on_member_join(membro:discord.Member):
 
 botStan.add_command(StanCaculadora.calcular)
 
-#botStan.add_command(JogosStan.jogos)
+botStan.add_command(JogosStan.jogos)
 
 
 
