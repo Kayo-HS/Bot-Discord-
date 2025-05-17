@@ -3,27 +3,41 @@ from discord.ext import commands
 
 @commands.command()
 async def jogos(ctx:commands.Context):
-    embed = discord.Embed(title="Vamos no divertir", description= "Escolha uma opção:", color=discord.Color.blue())
-    embed.add_field(name= "Opção 1:", value= "Pedra, papel e tesoura", inline=False)
-    embed.add_field(name= "Opção 2:", value= "Pedra, papel e tesoura", inline=False)
-    embed.add_field(name= "Opção 3:", value= "Pedra, papel e tesoura", inline=False)
-    msg = await ctx.send(embed=embed)
+    async def resposta_botao(interact:discord.Integration):
+        await interact.response.send_message("Escolha uma opção:", view = resposta_botao)
 
-    await msg.add_reaction("1️⃣")
-    await msg.add_reaction("2️⃣")
-    await msg.add_reaction("3️⃣")
+    view_jogos = discord.ui.View()
 
-    def check (reaction, user):
-        return user == ctx.author and str(reaction.emoji) in ["1️⃣", "2️⃣", "3️⃣"]
+    botao_jogos = discord.ui.Button(label="Pedra, Papel e Tesoura", style=discord.ButtonStyle.green)
+    botao_jogos.callback = resposta_botao
+    view_jogos.add_item(botao_jogos)
+
+    botaoJogoAdvinhaçao = discord.ui.Button(label= "Advinhe o Nº que estou pensando")
+    botaoJogoAdvinhaçao.callback = resposta_botao
+    view_jogos.add_item(botaoJogoAdvinhaçao)
     
-    try:
-        reaction, user = await commands.wait_for("reaction_add", timeout=60.0, check=check)
+    await ctx.reply("Escolha um jogo:", view=view_jogos)
 
-        if str(reaction.emoji) == "1️⃣":
-            await ctx.send('Você escolheu a Opção 1!')
-        elif str(reaction.emoji) == "2️⃣":
-              await ctx.send('Você escolheu a Opção 2!')
-        elif str(reaction.emoji) == "3️⃣":
-           await ctx.send('Você escolheu a Opção 3!')
-    except StopAsyncIteration.TimeoutError:
-        await ctx.send('Tempo esgotado!')
+@commands.command()
+async def escolha_jogo(ctx: commands.context):
+    async def resposta_escolha(interact : discord.Integration):
+        await interact.response.send_message(f"Você escolheu: {interact.data["custom_id"]}")
+
+    view_escolha = discord.ui.View()
+
+    botao_pedra = discord.ui.Button(label="Pedra", style=discord.ButtonStyle.gray)
+    botao_papel = discord.ui.Button(label="Papel", style=discord.ButtonStyle.green)
+    botao_tesoura = discord.ui.Button(label="Tesoura", style=discord.ButtonStyle.red)
+
+    botao_pedra.callback = resposta_escolha
+    botao_papel.callback = resposta_escolha
+    botao_tesoura.callback = resposta_escolha
+
+    view_escolha.add_item(botao_pedra)
+    view_escolha.add_item(botao_papel)
+    view_escolha.add_item(botao_tesoura)
+
+    await ctx.send("Escolha seu objeto:", view = view_escolha) 
+
+    
+    
