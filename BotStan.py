@@ -38,7 +38,19 @@ async def on_member_join(membro:discord.Member):
 
     await canal.send(embed=meu_embed) 
     
-
+@botStan.command
+@commands.has_permissions(ban_members = True)
+async def ban(ctx, member: discord.member, *, reason=None):
+    try:
+        await member.ban(reason=reason)
+        await ctx.send(f"{member.mention} foi banido com sucesso!\nMotivo:{reason} ")
+    except discord.Forbidden:
+        await ctx.send("Não tenho permissão para banir esse usuário.")
+    except discord.HTTPException:
+        await ctx.send("Ocorreu um erro ao tentar banir o usuário")
+async def ban_error(ctx, error):
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send("Você não tem permissão para banir membros.")             
 
 
 
